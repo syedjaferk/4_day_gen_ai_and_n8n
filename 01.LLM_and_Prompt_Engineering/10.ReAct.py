@@ -3,7 +3,7 @@ import json
 import requests
 
 # --- Config ---
-API_KEY = "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"
+API_KEY = "YOUR_GROK_API_KEY"
 URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
@@ -76,4 +76,4 @@ def run_react_agent(user_query):
 
 
 # --- Execution ---
-run_react_agent("What is the weather in ooty ?")
+run_react_agent("What is the weather in chennai ?")

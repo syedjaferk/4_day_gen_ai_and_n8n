@@ -28,5 +28,5 @@ def get_few_shot(api_key, query):
     return response.json()["choices"][0]["message"]["content"]
 
 
-API_KEY = "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"
+API_KEY = "YOUR_GROK_API_KEY"
 print(get_few_shot(API_KEY, "Find the sum of all even numbers between 1 and 50."))

@@ -1,11 +1,11 @@
 import requests
 
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "YOUR_GROK_API_KEY"
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 MODEL = "openai/gpt-oss-120b"
 
 
-def call_groq(messages, temperature=2):
+def call_groq(messages, temperature=0):
     """Core function to handle the HTTP request."""
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
@@ -17,6 +17,7 @@ def call_groq(messages, temperature=2):
     response = requests.post(GROQ_URL, headers=headers, json=payload)
 
     if response.status_code == 200:
+        print(response.json())
         return response.json()["choices"][0]["message"]["content"]
     else:
         return f"Request failed: {response.status_code} - {response.text}"
