@@ -1,0 +1,152 @@
+{
+  "name": "Telegram Weather Collector",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Parse the city from this{{ $json.chatInput }}  and send it to find the weather details using the available tool and convert the output json to a string with just the temperature details in celcius and no symbols. ",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        512,
+        -32
+      ],
+      "id": "bb848f09-df76-4d20-967a-48a636280c19",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        400,
+        240
+      ],
+      "id": "983793f5-2258-4d8d-8360-27b89c609a51",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "cH4SuiRy7O3qvWHP",
+          "name": "SJ Groq Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "{\n        \"type\": \"function\",\n        \"function\": {\n            \"name\": \"get_weather\",\n            \"description\": \"Get current weather for a city\",\n            \"parameters\": {\n                \"type\": \"object\",\n                \"properties\": {\n                    \"city\": {\n                        \"type\": \"string\",\n                        \"description\": \"Name of the city\"\n                    }\n                },\n                \"required\": [\"city\"]\n            }\n        }\n    }",
+        "url": "https://api.openweathermap.org/data/2.5/weather?appid=0bbdc6d295d9e112eb3046697cb8f7d8",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        768,
+        240
+      ],
+      "id": "96e48b6f-5bbc-419f-bcd7-46c8c769f671",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        96,
+        -32
+      ],
+      "id": "bf3f8f25-00a4-4908-b8b8-56c01eaf13ae",
+      "name": "When chat message received",
+      "webhookId": "d645af83-e84c-4019-9bc9-22d03bbf6042"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1008,
+        -32
+      ],
+      "id": "003e8f9d-731d-4e6b-ab6d-d3681221d8c1",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "f6133f80-a3ef-495f-9944-31da9c0d8e74",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b243f0a47a406c87cd60daf04fc898503a6b196a087e627d0f0cd179a5cd2a5c"
+  },
+  "id": "NTfbOMmRTRDjV2LT",
+  "tags": []
+}

@@ -1,0 +1,335 @@
+{
+  "name": "Expense Tracker",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        -16
+      ],
+      "id": "1a809d13-5e00-459b-a2a3-8ca7d8fd6031",
+      "name": "Telegram Trigger",
+      "webhookId": "75990236-3db4-4c64-8cf6-14121941ed7b",
+      "credentials": {
+        "telegramApi": {
+          "id": "tSdJNoSxdFKOokwv",
+          "name": "SJ Expense Tracker"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an Expense Tracker and analyser. \n\nMessage:  {{ $json.message.text }}\n\nInput:\nInput will be a description of the spend and the amount used for spend.\nNow you need to seperate amount and description. And identify a category from the below only.\n\nCategories are,\n1. Food\n2. Travel\n3. Internet\n4. Petrol\n5. Groceries\n6. Entertainment\n7. Miscellaneous\n\nOutput Format eg:\n\n{ \n\n \"category\": \"Food\", \n \"amount\": 23,\n \"description\": \"SBA Injee Tea\"\n \"date\": \"2026-05-03\",\n \"day\": \"Sunday\"\n\n}\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        112,
+        -16
+      ],
+      "id": "f1d94942-bc67-4663-973c-061afe4853fd",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        112,
+        192
+      ],
+      "id": "9d8ea018-794d-431e-88af-9cf139247abf",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "cH4SuiRy7O3qvWHP",
+          "name": "SJ Groq Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"category\":  {{ $json.output.parseJson().category }},\n  \"amount\": {{ $json.output.parseJson().amount }},\n  \"description\": {{ $json.output.parseJson().description }},\n  \"date\": {{ $json.output.parseJson().date }},\n  \"day\": {{ $json.output.parseJson().day }}\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        -16
+      ],
+      "id": "a310bcd1-3150-44bc-a181-963573bada53",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "collection": "spending",
+        "fields": "category,amount,description,date,day",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        -16
+      ],
+      "id": "cb4af243-a23d-44d0-b4d6-720b26ab1559",
+      "name": "Insert documents",
+      "credentials": {
+        "mongoDb": {
+          "id": "zdZPI09369ZMm1Te",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 11,
+              "triggerAtMinute": 20
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        400
+      ],
+      "id": "263595d3-4d0c-4834-93dc-dc12333c41c9",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "aggregate",
+        "collection": "spending",
+        "query": "=[\n{\n \"$match\": {\n    \"date\": \"{{ $today.format('yyyy-MM-dd') }}\"\n }\n},\n{\n  \"$group\": {\n    \"_id\": null ,\n    \"total\": { \"$sum\": \"$amount\" }\n  }\n}] "
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.2,
+      "position": [
+        176,
+        400
+      ],
+      "id": "03f6515c-7fa2-457f-8b61-d59060894254",
+      "name": "Aggregate documents",
+      "credentials": {
+        "mongoDb": {
+          "id": "zdZPI09369ZMm1Te",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Based on my total expense per day give a comment. My budget for a single day is 300. \n\nHere is todays expendiure  {{ $json.total }} \n\nGive the output in 3 sentence. ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        400
+      ],
+      "id": "566d66ff-f437-4456-b712-c4f43c74713d",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        320,
+        608
+      ],
+      "id": "02e6f0f7-b70c-4a74-a267-b3ddd1d851d0",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "cH4SuiRy7O3qvWHP",
+          "name": "SJ Groq Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "-5034366552",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        800,
+        400
+      ],
+      "id": "f6651072-d9c8-4755-ac9d-06bc4c9fee2b",
+      "name": "Send a text message",
+      "webhookId": "a350bfc7-4084-46bf-add7-378106eeb0e3",
+      "credentials": {
+        "telegramApi": {
+          "id": "tSdJNoSxdFKOokwv",
+          "name": "SJ Expense Tracker"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "-5034366552",
+        "text": "=Given data is successfully inserted.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        -16
+      ],
+      "id": "31b01a32-5006-446e-a624-f0be7cd54275",
+      "name": "Send a text message1",
+      "webhookId": "a350bfc7-4084-46bf-add7-378106eeb0e3",
+      "credentials": {
+        "telegramApi": {
+          "id": "tSdJNoSxdFKOokwv",
+          "name": "SJ Expense Tracker"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Insert documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Aggregate documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate documents": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert documents": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "73680b1d-5ce9-4bfe-ad54-4ddcd44774cb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b243f0a47a406c87cd60daf04fc898503a6b196a087e627d0f0cd179a5cd2a5c"
+  },
+  "id": "XB4tRnJvujIAuXux",
+  "tags": []
+}

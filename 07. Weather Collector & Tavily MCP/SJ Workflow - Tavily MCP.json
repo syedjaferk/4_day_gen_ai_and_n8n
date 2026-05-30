@@ -1,0 +1,166 @@
+{
+  "name": "SJ Workflow - Tavily MCP",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -400,
+        -32
+      ],
+      "id": "07a55418-aed8-467a-913c-aa49a8050d2f",
+      "name": "Telegram Trigger",
+      "webhookId": "fee357dd-f56c-490d-bef0-5c0f8e8d5488",
+      "credentials": {
+        "telegramApi": {
+          "id": "BT9jJlljaalEuwGm",
+          "name": "can change"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a search enginer capable AI Agent. \n\nYou have access to web search tool called \"tavily_Search\". \n\nSearch Strategy:\n- Convert user question {{ $json.message.text }}in a precise search query and search for it. \n\nOutput Rules:\n\n- Provide clear structured answers.\n- Mention soruce urls also. \n- the output text should be less than 100 characters. \n- Dont include any markdown formats in the output.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -80,
+        -32
+      ],
+      "id": "f72958cc-ec09-45b3-8b2d-e33524ae6d65",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        192
+      ],
+      "id": "8c2908d2-2e07-4cf2-aa3f-b1dd5d6117ef",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "r0ERoPpKjKTzqnvg",
+          "name": "n8n_syedjafer_groq"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        272,
+        -32
+      ],
+      "id": "e2a288d8-f6bc-4d5b-be04-e220e9aa7e0b",
+      "name": "Send a text message",
+      "webhookId": "ff318c49-bd0a-47e9-b8c9-3e8a34f859e2",
+      "credentials": {
+        "telegramApi": {
+          "id": "BT9jJlljaalEuwGm",
+          "name": "can change"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        144,
+        208
+      ],
+      "id": "8e770bbf-cc43-44c6-829f-ef34bd1a6ea1",
+      "name": "Search in Tavily",
+      "credentials": {
+        "tavilyApi": {
+          "id": "TG4HzWcplzhbdAhB",
+          "name": "SJ Tavily Account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search in Tavily": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d1a678f7-755b-4b61-9b6a-891fe93e2d95",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b243f0a47a406c87cd60daf04fc898503a6b196a087e627d0f0cd179a5cd2a5c"
+  },
+  "id": "3bjPlLyuZgaB0ReT",
+  "tags": []
+}

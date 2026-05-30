@@ -1,0 +1,308 @@
+{
+  "name": "SJ - Quiz Sender",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -336,
+        -96
+      ],
+      "id": "77d5489e-caa8-4a1d-ba42-cacb97495421",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://raw.githubusercontent.com/syedjaferk/daily_quiz_sender/refs/heads/main/questions/1d1c/quiz_' + $today.format('yyyy_MM_dd')  + '.json'  }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        304,
+        144
+      ],
+      "id": "8c833b8c-79b8-4ea3-a583-ef462f2a3c09",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "chatId": "-5034366552",
+        "text": "=*Daily Quiz: {{ $today.format('yyyy-MM-dd') }}*\n\n*Question*: {{ $json.data.parseJson().question }}\n\n*Options :*\n\n1. {{ $json.data.parseJson().options[0] }}\n2. {{ $json.data.parseJson().options[1] }}\n3. {{ $json.data.parseJson().options[2] }}\n4. {{ $json.data.parseJson().options[3] }}\n\n\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        752,
+        128
+      ],
+      "id": "0492864e-6eeb-493b-83e4-8d8215cda546",
+      "name": "Send a text message",
+      "webhookId": "d7894183-18b1-4a57-ae3b-8c8b8cfe816f",
+      "credentials": {
+        "telegramApi": {
+          "id": "BT9jJlljaalEuwGm",
+          "name": "can change"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Give a question  related to linux like the example below , \n\n{\"question\": \"How can you display the system date in GMT/UTC time zone?\", \"options\": [\"date --utc\", \"date -g\", \"date -u\", \"date --gmt\"], \"correct_option_id\": 2, \"explanation\": \"The 'date -u' command displays the system date in GMT/UTC time zone.\"}\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        304,
+        -240
+      ],
+      "id": "fe25ec7d-0201-405d-99b5-9148e428cbdf",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -32
+      ],
+      "id": "a9733869-dd54-4812-b245-cd179ce7850a",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "cH4SuiRy7O3qvWHP",
+          "name": "SJ Groq Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "-5034366552",
+        "text": "=*Daily Quiz: {{ $today.format('yyyy-MM-dd') }}*\n\n*Question*: {{ $json.output.parseJson().question }}\n\n*Options :*\n\n1. {{ $json.output.parseJson().options[0] }}\n2. {{ $json.output.parseJson().options[1] }}\n3. {{ $json.output.parseJson().options[2] }}\n4. {{ $json.output.parseJson().options[3] }}\n\n\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        736,
+        -240
+      ],
+      "id": "c92643ec-c363-42bd-9934-28025bc92b97",
+      "name": "Send a text message1",
+      "webhookId": "d7894183-18b1-4a57-ae3b-8c8b8cfe816f",
+      "credentials": {
+        "telegramApi": {
+          "id": "BT9jJlljaalEuwGm",
+          "name": "can change"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "collection": "quiz",
+        "options": {},
+        "query": "={\"date\": \"{{$today.format('yyyy-MM-dd')}}\"}"
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.2,
+      "position": [
+        304,
+        -496
+      ],
+      "id": "08472fcb-854e-4f44-be7a-30a9fedeafe5",
+      "name": "Find documents",
+      "credentials": {
+        "mongoDb": {
+          "id": "zdZPI09369ZMm1Te",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "-5034366552",
+        "text": "=*Daily Quiz: {{ $today.format('yyyy-MM-dd') }}*\n\n*Question*: {{ $json.question }}\n\n*Options :*\n\n1. {{ $json.options[0] }}\n2. {{ $json.options[1] }}\n3. {{ $json.options[2] }}\n4. {{ $json.options[3] }}\n\n\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        -496
+      ],
+      "id": "02a49ca8-6093-407b-93e9-cb720eaad582",
+      "name": "Send a text message2",
+      "webhookId": "d7894183-18b1-4a57-ae3b-8c8b8cfe816f",
+      "credentials": {
+        "telegramApi": {
+          "id": "BT9jJlljaalEuwGm",
+          "name": "can change"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "findOneAndUpdate",
+        "collection": "quiz",
+        "updateKey": "=qid",
+        "fields": "=status",
+        "upsert": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        -496
+      ],
+      "id": "828a103f-ae40-426a-a666-801f2e081d02",
+      "name": "Find and update documents",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mongoDb": {
+          "id": "zdZPI09369ZMm1Te",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n\n  \"status\": true\n}\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        -496
+      ],
+      "id": "e8181671-90eb-4674-a377-a08e629b0b84",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Find documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find documents": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find and update documents": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Find and update documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "9dac1682-d695-4725-b750-8cc0b956e900",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b243f0a47a406c87cd60daf04fc898503a6b196a087e627d0f0cd179a5cd2a5c"
+  },
+  "id": "agfOzreqojWcxDe1",
+  "tags": []
+}
