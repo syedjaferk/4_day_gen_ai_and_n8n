@@ -1,0 +1,468 @@
+{
+  "name": "Data Transformation Nodes",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        592,
+        464
+      ],
+      "id": "19d279e6-bfbc-4a85-a223-2c8622c1beee",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://jsonplaceholder.typicode.com/todos/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "5b445857-283a-49c3-aa81-6b2def77a174",
+      "name": "Mock Data"
+    },
+    {
+      "parameters": {
+        "operation": "addToDate",
+        "magnitude": "={{ $json.time }}",
+        "timeUnit": "hours",
+        "duration": "={{ 5 }}",
+        "outputFieldName": "=date",
+        "options": {
+          "includeInputFields": true
+        }
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        544,
+        -176
+      ],
+      "id": "97e76c89-de7a-4023-bce4-44bee8eb0a4e",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"title\": \"{{$json.title.toTitleCase()}}\"\n  \"data\": \"{{ $now.toLocaleString() }}\"\n}\n",
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        0
+      ],
+      "id": "bf29d498-9e95-49b5-a1eb-4344c0a04b91",
+      "name": "Modify Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c62dbe98-46cf-48d1-80a3-b5f5fbf3a662",
+              "leftValue": "={{ $json.completed }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "2d67bb4f-718f-4acb-86f2-5ffa1ec323fe",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": 20,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "60560c5e-f560-4eee-9780-6b7e9c34d1e3",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": 30,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        256,
+        224
+      ],
+      "id": "60014f09-e4e3-4a59-a815-c9783aac8a6a",
+      "name": "Filter Only"
+    },
+    {
+      "parameters": {
+        "maxItems": 23,
+        "keep": "lastItems"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        256,
+        560
+      ],
+      "id": "2fd62dc4-270f-431d-b06c-9d085bb8f1b5",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customers",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1248,
+        0
+      ],
+      "id": "825e0335-4083-4637-87f4-24c5f5bf07e3",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"customers\": [\n    {\n      \"id\": 1,\n      \"name\": \"Customer 1\",\n      \"city\": \"Chennai\",\n      \"email\": \"customer1@example.com\"\n    },\n    {\n      \"id\": 2,\n      \"name\": \"Customer 2\",\n      \"city\": \"Bangalore\",\n      \"email\": \"customer2@example.com\"\n    },\n    {\n      \"id\": 3,\n      \"name\": \"Customer 3\",\n      \"city\": \"Mumbai\",\n      \"email\": \"customer3@example.com\"\n    },\n    {\n      \"id\": 4,\n      \"name\": \"Customer 4\",\n      \"city\": \"Delhi\",\n      \"email\": \"customer4@example.com\"\n    },\n    {\n      \"id\": 5,\n      \"name\": \"Customer 5\",\n      \"city\": \"Hyderabad\",\n      \"email\": \"customer5@example.com\"\n    },\n    {\n      \"id\": 6,\n      \"name\": \"Customer 6\",\n      \"city\": \"Kolkata\",\n      \"email\": \"customer6@example.com\"\n    },\n    {\n      \"id\": 7,\n      \"name\": \"Customer 7\",\n      \"city\": \"Pune\",\n      \"email\": \"customer7@example.com\"\n    },\n    {\n      \"id\": 8,\n      \"name\": \"Customer 8\",\n      \"city\": \"Coimbatore\",\n      \"email\": \"customer8@example.com\"\n    },\n    {\n      \"id\": 9,\n      \"name\": \"Customer 9\",\n      \"city\": \"Madurai\",\n      \"email\": \"customer9@example.com\"\n    },\n    {\n      \"id\": 10,\n      \"name\": \"Customer 10\",\n      \"city\": \"Trichy\",\n      \"email\": \"customer10@example.com\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        992,
+        0
+      ],
+      "id": "70b46f92-758a-40e1-ade2-29546f39ece6",
+      "name": "Mock Data1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "customers_data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        0
+      ],
+      "id": "ee8ff853-1fb7-498e-88f8-0a4b6ce71f3d",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "customer_id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1616,
+        448
+      ],
+      "id": "bf4f7b6a-2454-4112-864f-893e4499182d",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\"data\":[\n  {\n    \"customer_id\": 1,\n    \"name\": \"Alice\",\n    \"email\": \"alice@example.com\"\n  },\n  {\n    \"customer_id\": 2,\n    \"name\": \"Bob\",\n    \"email\": \"bob@example.com\"\n  },\n  {\n    \"customer_id\": 3,\n    \"name\": \"Charlie\",\n    \"email\": \"charlie@example.com\"\n  }\n]}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        832,
+        368
+      ],
+      "id": "d7545b07-d54c-4a0c-a181-aad1fab02854",
+      "name": "Branch A"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\"data\":[\n  {\n    \"customer_id\": 1,\n    \"city\": \"Chennai\",\n    \"state\": \"Tamil Nadu\"\n  },\n  {\n    \"customer_id\": 2,\n    \"city\": \"Bangalore\",\n    \"state\": \"Karnataka\"\n  },\n  {\n    \"customer_id\": 3,\n    \"city\": \"Mumbai\",\n    \"state\": \"Maharashtra\"\n  }\n]}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        832,
+        560
+      ],
+      "id": "1eab5df4-24ed-4fdd-800d-30558c6a4cc3",
+      "name": "Branch B"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "sum",
+              "field": "amount"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        2288,
+        480
+      ],
+      "id": "d76fa1c1-dbfa-4f38-88a8-4d47f3b8efd2",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\"data\":[\n  {\n    \"customer\": \"Alice\",\n    \"city\": \"Chennai\",\n    \"amount\": 1000\n  },\n  {\n    \"customer\": \"Bob\",\n    \"city\": \"Chennai\",\n    \"amount\": 2000\n  },\n  {\n    \"customer\": \"Charlie\",\n    \"city\": \"Bangalore\",\n    \"amount\": 1500\n  },\n  {\n    \"customer\": \"David\",\n    \"city\": \"Bangalore\",\n    \"amount\": 3000\n  },\n  {\n    \"customer\": \"Eve\",\n    \"city\": \"Chennai\",\n    \"amount\": 500\n  }\n]}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1888,
+        480
+      ],
+      "id": "d16c7336-1d5c-4609-9806-b40355bb1144",
+      "name": "Summarization Data"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        480
+      ],
+      "id": "14b21971-c6f4-4629-ba64-8b6db8cd31ba",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.time = $now.toString();\n  item.json.title = item.json.title.toUpperCase()\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        288,
+        -176
+      ],
+      "id": "7f56b0f5-f2a8-422e-b17a-d87e1da2ad77",
+      "name": "Data Transformation By JS Code"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        368
+      ],
+      "id": "597acb2f-88a5-4ae1-87b5-e6b2567f47ed",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        544
+      ],
+      "id": "f9b76416-fc27-4232-9899-9546bbcc00a4",
+      "name": "Split Out3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Branch A",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Branch B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mock Data": {
+      "main": [
+        [
+          {
+            "node": "Data Transformation By JS Code",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Modify Fields",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Filter Only",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mock Data1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Branch A": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Branch B": {
+      "main": [
+        [
+          {
+            "node": "Split Out3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarization Data": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Transformation By JS Code": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6cccab37-b339-4c61-89fc-c7d962a5d660",
+  "meta": {
+    "instanceId": "b243f0a47a406c87cd60daf04fc898503a6b196a087e627d0f0cd179a5cd2a5c"
+  },
+  "id": "sDuJGxMgI3EllQDM",
+  "tags": []
+}
